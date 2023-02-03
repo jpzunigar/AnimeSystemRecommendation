@@ -14,6 +14,7 @@ from numpy import load
 
 def get_anime_df(url):
     df=pd.read_csv(url)
+    df=df.reset_index()
     return df
 
 def get_anime_index(df):
@@ -90,3 +91,5 @@ if selected_value is None:
 else:
     rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_1000.npz'),get_anime_index(df),df)
     st.write(rec)
+
+st.write(get_cosine_matrix('./Data/matrix_1000.npz'))
