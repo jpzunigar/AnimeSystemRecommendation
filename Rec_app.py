@@ -67,7 +67,7 @@ st.write("")
 st.write("")
 
 
-df=get_anime_df('./Data/anime_1000.csv')
+df=get_anime_df('./Data/anime_3000.csv')
 
 def search_function(search_term: str) -> List[str]:
     suggestions = []
