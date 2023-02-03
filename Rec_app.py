@@ -89,7 +89,7 @@ st.write(get_anime_index(df))
 if selected_value is None:
     st.write('Seleccione un anime')
 else:
-    rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_1000.npz'),get_anime_index(df),df)
+    rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_3000.npz'),get_anime_index(df),df)
     st.write(rec)
 
-st.write(get_cosine_matrix('./Data/matrix_1000.npz'))
+st.write(get_cosine_matrix('./Data/matrix_3000.npz'))
