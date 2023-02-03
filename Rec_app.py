@@ -5,6 +5,12 @@ import requests
 import matplotlib.pyplot as plt
 import seaborn as sns
 from streamlit_searchbox import st_searchbox
+from typing import List
+from numpy import load
+
+
+
+@st.cache(persist=True)
 
 def get_anime_df(url):
     df=pd.read_csv(url)
@@ -17,7 +23,10 @@ def get_anime_index(df):
 def get_anime_name_list(df):
     name_list=list(df["Name"])
     return name_list
-
+def get_cosine_matrix(url):
+    dict_data = load(url)
+    dict_data = dict_data['arr_0']
+    return dict_data
 def get_recommendatios(title,matrix,indices,df):
     # Get the index of the input anime
     idx = indices[title]
@@ -38,6 +47,11 @@ def get_recommendatios(title,matrix,indices,df):
     return df['Name'].iloc[anime_indices]
 
     # Set the background color of the page
+
+st.set_page_config(page_title='ASR',
+                    page_icon=':bar_chart:',
+                    layout='wide')
+
 st.markdown("<style>body {background-color: #ADD8E6;}</style>", unsafe_allow_html=True)
 
 # Create the title
@@ -54,4 +68,25 @@ st.write("")
 
 df=get_anime_df('./Data/anime_1000.csv')
 
-st.write(df)
+def search_function(search_term: str) -> List[str]:
+    suggestions = []
+    # Loop through the list of countries
+    for name in get_anime_name_list(df):
+        # Check if the search term appears in the country name (case-insensitive)
+        if search_term.lower() in name.lower():
+            suggestions.append(name)
+    return suggestions
+
+# pass search function to searchbox
+selected_value = st_searchbox(
+    search_function,
+    key="name_searchbox",
+)
+
+st.write(get_anime_index(df))
+
+if selected_value is None:
+    st.write('Seleccione un anime')
+else:
+    rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_1000.npz'),get_anime_index(df),df)
+    st.write(rec)
