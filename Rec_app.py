@@ -28,24 +28,59 @@ def get_cosine_matrix(url):
     dict_data = load(url)
     dict_data = dict_data['arr_0']
     return dict_data
-def get_recommendatios(title,matrix,indices,df,k):
-    # Get the index of the input anime
-    idx = indices[title]
+def get_recommendatios(title,matrix,indices,df,k,option):
+    if option=='No':
+        # Get the index of the input anime
+        idx = indices[title]
 
-    # Get the similarity scores of all movies with that anime
-    sim_scores = list(enumerate(matrix[idx]))
+        # Get the similarity scores of all movies with that anime
+        sim_scores = list(enumerate(matrix[idx]))
 
-    # Sort the animes based on the similarity scores
-    sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+        # Sort the animes based on the similarity scores
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-    # Get the scores of the 10 most similar animes, sim_scores[0] would be the anime itself
-    sim_scores = sim_scores[1:k+1]
+        # Get the scores of the 10 most similar animes, sim_scores[0] would be the anime itself
+        sim_scores = sim_scores[1:k+1]
 
-    # Get the anime indices
-    anime_indices = [i[0] for i in sim_scores]
+        # Get the anime indices
+        anime_indices = [i[0] for i in sim_scores]
 
-    # Return the top 10 most similar movies
-    return df[['Name','main_pic','sypnopsis','anime_url']].iloc[anime_indices]
+        # Return the top 10 most similar movies
+        return df[['Name','main_pic','sypnopsis','anime_url']].iloc[anime_indices]
+
+    else:
+
+        indices_a_descartar = df[df['Name'].str.contains(title)].index
+        if len(text)==0:
+            # filtra el DataFrame utilizando la máscara
+            filtered_df = df[~df['Name'].str.contains(title)]
+        else:
+            filtered_df = df[~df['Name'].str.contains(text)]
+
+        matrix = np.delete(matrix, indices_a_descartar, axis=1)
+
+
+        idx = indices[title]
+        
+        # Get the similarity scores of all movies with that anime
+        sim_scores = list(enumerate(matrix[idx]))
+
+        sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
+
+        sim_scores = sim_scores[0:k+1]
+
+        anime_indices = [i[0] for i in sim_scores]
+
+        filtered_df=filtered_df.reset_index(drop=True)
+
+        return filtered_df[['Name','main_pic','sypnopsis','anime_url']].iloc[anime_indices]
+
+
+
+         
+
+
+
 
     # Set the background color of the page
 
@@ -93,12 +128,22 @@ st.write(" ")
 if selected_value is None:
     st.warning('Select an Anime Please!')
 else:
-    k = st.slider('Select N. of recommendations', 1, 15, 5)
+    rowf_spacer1, rowf_1, rowf_spacer2, rowf_2, rowf_spacer3 = st.columns((.1, .3, .1, 1.3, .1))
+    with rowf_2:
+        k = st.slider('Select N. of recommendations', 1, 15, 5)
+    with rowf_1:
+        option = st.selectbox('Include only recommendations of other anime (exclude those related to the title provided)',
+        ('No', 'Yes'))
+        if option=='No':
+            pass
+        else:
+            text = st.text_input('Anime title to avoid.The text string entered here will be excluded from the titles in the results.', selected_value,placeholder='title to be exclude')
+
     st.write("")
     st.write("")
     st.write("")
     st.write("")
-    rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_3000.npz'),get_anime_index(df),df,k)
+    rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_3000.npz'),get_anime_index(df),df,k,option=option)
     for i, row in rec.iterrows():
             image_url = row["main_pic"]
             name = row["Name"]
