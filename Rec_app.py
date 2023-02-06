@@ -28,7 +28,7 @@ def get_cosine_matrix(url):
     dict_data = load(url)
     dict_data = dict_data['arr_0']
     return dict_data
-def get_recommendatios(title,matrix,indices,df):
+def get_recommendatios(title,matrix,indices,df,k):
     # Get the index of the input anime
     idx = indices[title]
 
@@ -39,7 +39,7 @@ def get_recommendatios(title,matrix,indices,df):
     sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
     # Get the scores of the 10 most similar animes, sim_scores[0] would be the anime itself
-    sim_scores = sim_scores[1:11]
+    sim_scores = sim_scores[1:k+1]
 
     # Get the anime indices
     anime_indices = [i[0] for i in sim_scores]
@@ -64,6 +64,9 @@ st.markdown("<h1 style='text-align: center; font-size: 50px; color: #FF5733;'>%s
 
 st.write("")
 st.write("")
+st.markdown(f"<p style='text-align: justify;font-size: 15px; color: #FFFFFF;'>Have you ever watched an anime you liked and want to find some similarities and don't know how"
+" to search for it, this application allows you to search based on the title of an anime. Recommendations were calculated using a cosine similarity matrix. Now, just enter the "
+" name of an anime using the search engine below ⬇️.</p>",unsafe_allow_html=True)
 st.write("")
 
 
@@ -90,7 +93,12 @@ st.write(" ")
 if selected_value is None:
     st.warning('Select an Anime Please!')
 else:
-    rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_3000.npz'),get_anime_index(df),df)
+    k = st.slider('Select N. of recommendations', 1, 15, 5)
+    st.write("")
+    st.write("")
+    st.write("")
+    st.write("")
+    rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_3000.npz'),get_anime_index(df),df,k)
     for i, row in rec.iterrows():
             image_url = row["main_pic"]
             name = row["Name"]
@@ -102,8 +110,9 @@ else:
                     st.markdown(f"[![Foo]({image_url})]({page_url})")
                     st.write("")
                 with row0_2:
-                    st.markdown(f"<h1 style='font-size: 40px; color: #FF5733;'>{name}</h1>",unsafe_allow_html=True)
-                    st.markdown(f"<h1 style='text-align: justify;font-size: 15px; color: #FFFFFF;'>{description}</h1>",unsafe_allow_html=True)
-                    st.write("")
+                    st.markdown(f"<h3 style='font-size: 40px; color: #FF5733;'>{name}</h3>",unsafe_allow_html=True)
+                    st.markdown(f"<h3 style='text-align: justify;font-size: 15px; color: #FFFFFF;'>{description}</h3>",unsafe_allow_html=True)
+                    st.write("👈 for more information click on the image ")
+                    st.write(" ")
                 st.markdown("""---""")
 
