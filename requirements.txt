@@ -1,0 +1,7 @@
+matplotlib
+streamlit
+numpy==1.21.5
+pandas
+seaborn
+typing
+streamlit_searchbox
