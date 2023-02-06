@@ -45,7 +45,7 @@ def get_recommendatios(title,matrix,indices,df):
     anime_indices = [i[0] for i in sim_scores]
 
     # Return the top 10 most similar movies
-    return df[['Name','main_pic','sypnopsis']].iloc[anime_indices]
+    return df[['Name','main_pic','sypnopsis','anime_url']].iloc[anime_indices]
 
     # Set the background color of the page
 
@@ -95,13 +95,15 @@ else:
             image_url = row["main_pic"]
             name = row["Name"]
             description = row["sypnopsis"]
+            page_url = row["anime_url"]
             with st.container():
                 row0_spacer1, row0_1, row0_spacer2, row0_2, row0_spacer3 = st.columns((.1, .3, .1, 1.3, .1))
                 with row0_1:
-                    st.image(image_url, width=200)
+                    st.markdown(f"[![Foo]({image_url})]({page_url})")
                     st.write("")
                 with row0_2:
                     st.markdown(f"<h1 style='font-size: 40px; color: #FF5733;'>{name}</h1>",unsafe_allow_html=True)
                     st.markdown(f"<h1 style='text-align: justify;font-size: 15px; color: #FFFFFF;'>{description}</h1>",unsafe_allow_html=True)
                     st.write("")
+                st.markdown("""---""")
 
