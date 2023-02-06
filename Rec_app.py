@@ -89,3 +89,5 @@ if selected_value is None:
 else:
     rec=get_recommendatios(selected_value,get_cosine_matrix('./Data/matrix_3000.npz'),get_anime_index(df),df)
     st.write(rec)
+
+st.write(df)
