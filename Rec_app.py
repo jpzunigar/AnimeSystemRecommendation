@@ -10,7 +10,7 @@ from numpy import load
 
 
 
-@st.cache(persist=True)
+#@st.cache(persist=True)
 
 def get_anime_df(url):
     df=pd.read_csv(url)
